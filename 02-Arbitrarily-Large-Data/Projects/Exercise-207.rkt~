@@ -1,0 +1,133 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-reader.ss" "lang")((modname Exercise-207) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
+;; Data definitions
+;; ================
+
+(define-struct date
+  [year month day hour minute second])
+;; Date is (make-date Number Number Number Number Number Number)
+;; Represents an instance of date
+
+#;
+(define (fn-for-date date)
+  (... (date-year date)
+       (date-month date)
+       (date-day date)
+       (date-hour date)
+       (date-minute date)
+       (date-second date)))
+
+;; Association is one list of 2 items:
+;; - (list String BSDN)
+;; Represents an instance of tuple contain key and value
+
+#;
+(define (fn-for-association assoc)
+  (... (first assoc)     ;String
+       (second assoc)))  ;BSDN
+
+;; BSDN is one of:
+;; - Boolean
+;; - Number
+;; - String
+;; - Date
+;; Reperesents a value of an Association.
+
+(define (fn-for-bsdn bsdn)
+  (cond [(boolean? bsdn) (...)]
+        [(number? bsdn) (...)]
+        [(string? bsdn) (...)]
+        [(date? bsdn) (...)]))
+
+;; Associations is one of:
+;; - empty
+;; - (cons Association Associations)
+;; Represent a list of Association.
+
+#;
+(define (fn-for-associations assocs)
+  (cond [(empty? assocs) (...)]
+        [else
+         (... (fn-for-association (first assocs))
+              (fn-for-associations (rest assocs)))]))
+
+;; Track is Associations
+;; Represents a track in itunes.
+
+;; Tracks is (listof Track)
+;; Represents a list of track.
+
+#;
+(define (fn-for-tracks tracks)
+  (cond [(empty? tracks) (...)]
+        [else
+         (... (fn-for-associations (first tracks))
+              (fn-for-tracks (rest tracks)))]))
+
+;; Data
+;; ====
+
+;; Association
+(define NAME (list "Name" "Wild Child"))
+(define ARTIST (list "Artist" "Enya"))
+(define ALBUM (list "Album" "A Day Without Rain"))
+(define TIME (list "Total Time" 227996))
+(define TRACK# (list "Track Number" 2))
+(define PLAY# (list "Play Count" 20))
+
+;; Track
+(define TRACK-1
+  (list (list "Name" "Wild Child")
+        (list "Artist" "Enya")
+        (list "Album" "A Day Without Rain")
+        (list "Total Time" 227996)
+        (list "Track Number" 2)
+        (list "Play Count" 20)))
+(define TRACK-2
+  (list (list "Name" "Only Time")
+        (list "Artist" "Enya")
+        (list "Album" "A Day Without Rain")
+        (list "Total Time" 218000)
+        (list "Track Number" 3)
+        (list "Play Count" 15)))
+
+
+;; String Associations Any -> Associaition or Any
+;; produces value of first item that equal to key otherwise produces default.
+(check-expect (find-association "Name" TRACK-1 "Not found") (list "Name" "Wild Child"))
+(check-expect (find-association "Total time" TRACK-1 "Not found") "Not found")
+
+#;
+(define (find-association key assocs default) default)
+
+(define (find-association key assocs default)
+  (cond [(empty? assocs) default]
+        [else
+         (if (string=? key (first (first assocs)))
+             (first assocs)
+             (find-association key (rest assocs) default))]))
+
+;; Tracks -> Number
+;; produce totals time of tracks.
+(check-expect (total-time/list empty) 0)
+(check-expect (total-time/list (list TRACK-1 TRACK-2)) (+ 227996 218000))
+
+;(define (total-time/list tracks) 0)
+
+(define (total-time/list tracks)
+  (cond [(empty? tracks) 0]
+        [else
+         (+ (total-time/item (first tracks))
+            (total-time/list (rest tracks)))]))
+
+;; Track -> Number
+;; produce time of track.
+(check-expect (total-time/item TRACK-1) 227996)
+(check-expect (total-time/item TRACK-2) 218000)
+
+#;
+(define (total-time/item track) 0)
+
+(define (total-time/item track)
+  (second (find-association "Total Time" track 0)))

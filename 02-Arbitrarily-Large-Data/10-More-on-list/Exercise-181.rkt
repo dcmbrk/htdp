@@ -1,0 +1,12 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-reader.ss" "lang")((modname Exercise-181) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
+;; Exercise 181
+
+(list "a" "b" "c" "d")
+
+(list (list 1 2))
+
+(list "a" (list 1) #false)
+
+(list (list "a" 2) "hello")

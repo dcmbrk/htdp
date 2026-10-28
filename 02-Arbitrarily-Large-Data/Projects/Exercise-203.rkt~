@@ -1,0 +1,197 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-reader.ss" "lang")((modname Exercise-203) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
+;(require 2htdp/itunes)
+
+;; Data definitions
+;; ================
+
+(define-struct date
+  [year month day hour minute second])
+;; Date is (make-date Number Number Number Number Number)
+;; Represent an instance records: year, month, day, hour, minute, second
+
+
+#;
+(define (fn-for-date date)
+  (... date-year
+       date-month
+       date-day
+       date-hour
+       date-minute
+       date-second))
+
+(define-struct track
+  [name artist album time# track# added play# played])
+;; Track is (make-track String String String Number Number Date Number Date)
+;; Represent an instance records: title, artist, album, playing time, position in album, date, replay often, last played.
+
+
+
+#;
+(define (fn-for-track track)
+  (... track-name
+       track-artist
+       track-album
+       track-time#
+       track-track#
+       track-added
+       track-play#
+       track-played))
+
+;; Tracks is one of:
+;; - empty
+;; - (cons Track Tracks)
+
+#;
+(define (fn-for-tracks tracks)
+  (cond [(empty? tracks) (...)]
+        [else
+         (... (fn-for-track (first tracks))
+              (fn-for-tracks (rest tracks)))]))
+
+;; Functions
+;; =========
+
+;; Any Any Any Any Any Any Any Any -> Track or #false
+;; creates an instance of Track from valid arguments otherwise produces #false.
+
+(define (create-track name artist album time# track# added play# played)
+  (make-track name artist album time# track# added play# played))
+
+;; Any Any Any Any Any Any -> Date or #false
+;; creates an instance of Date from valid arguments otherwise produces #false.
+
+(define (create-date year month day hour minute second)
+  (make-date year month day hour minute second))
+
+;; String -> Tracks
+;; creates a list-of-tracks from text in file name (an XML export from iTunes)
+
+#;
+(define (read-itunes-as-tracks file-name)
+  ...)
+;; !!!
+
+;; Constants
+;; =========
+
+(define ITUNES-LOCATION "itunes.xml")
+#;
+(define itunes-tracks
+  (read-itunes-as-tracks ITUNES-LOCATION))
+;; !!!
+
+
+;; DATE
+(define DATE-1 (create-date 2020 5 15 14 30 0))
+(define DATE-2 (create-date 2023 11 1 9 15 45))
+
+;; TRACK
+(define TRACK-1
+  (create-track "Wild Child" "Enya" "A Day Without Rain" 227996 2 DATE-1 20 DATE-2))
+(define TRACK-2
+  (create-track "Only Time" "Enya" "A Day Without Rain" 218000 3 DATE-1 15 DATE-2))
+
+;; TRACKS
+(define TRACKS-0 empty)
+(define TRACKS-1 (list TRACK-1))
+(define TRACKS-2 (list TRACK-1 TRACK-2))
+
+;; Functions
+;; =========
+
+;; Tracks -> Number
+;; produces total amount of play time.
+(check-expect (total-time empty) 0)
+(check-expect (total-time TRACKS-1) (track-time# TRACK-1))
+(check-expect (total-time TRACKS-2)
+              (+ (track-time# TRACK-1)
+                 (track-time# TRACK-2)))
+
+;(define (total-time tracks) 0)
+
+(define (total-time tracks)
+  (cond [(empty? tracks) 0]
+        [else
+         (+ (track-time# (first tracks))
+            (total-time (rest tracks)))]))
+
+;; Tracks -> ListOfString
+;; produces list of album from given tracks.
+(check-expect (select-all-album-titles empty) empty)
+(check-expect (select-all-album-titles TRACKS-1) (list (track-album TRACK-1)))
+(check-expect (select-all-album-titles TRACKS-2) (list (track-album TRACK-1) (track-album TRACK-2)))
+
+#;
+(define (select-all-album-titles tracks) empty)
+
+(define (select-all-album-titles tracks)
+  (cond [(empty? tracks) empty]
+        [else
+         (cons (track-album (first tracks))
+               (select-all-album-titles (rest tracks)))]))
+
+;; ListOfString -> ListOfString
+;; produces set of string without doubles.
+(check-expect (create-set empty) empty)
+(check-expect (create-set (list "a" "b"))
+              (list "a" "b"))
+(check-expect (create-set (list "a" "b" "b"))
+              (list "a" "b"))
+(check-expect (create-set (list "a" "b" "a"))
+              (list "b" "a"))
+(check-expect (create-set (list "a"))
+              (list "a"))
+
+#;
+(define (create-set los) empty)
+
+(define (create-set los)
+  (cond [(empty? los) empty]                   
+        [else                                  
+         (if (member? (first los) (rest los))
+             (create-set (rest los))
+             (cons (first los) (create-set (rest los))))]))
+
+;; Tracks -> ListOfString
+;; produces list of unique album from given tracks.
+(check-expect (select-album-titles/unique empty) empty)
+(check-expect (select-album-titles/unique TRACKS-1) (list (track-album TRACK-1)))
+(check-expect (select-album-titles/unique TRACKS-2) (list (track-album TRACK-1)))
+
+#;
+(define (select-album-titles/unique tracks) empty)
+
+(define (select-album-titles/unique tracks)
+  (create-set (select-all-album-titles tracks)))
+
+
+;; String Tracks -> Tracks
+;; filters tracks in given album.
+(check-expect (select-album "A Day Without Rain" empty) empty)
+(check-expect (select-album "A Day With Rain" TRACKS-1) empty)
+(check-expect (select-album "A Day Without Rain" TRACKS-1) TRACKS-1)
+(check-expect (select-album "A Day Without Rain" TRACKS-2) TRACKS-2)
+
+#;
+(define (select-album album tracks) empty)
+
+(define (select-album album tracks)
+  (cond [(empty? tracks) empty]
+        [else
+         (if (in-album? album (first tracks))
+              (cons (first tracks) (select-album album (rest tracks)))
+              (select-album album (rest tracks)))]))
+
+;; String Track -> Boolean
+;; determines if track is in album.
+(check-expect (in-album? (track-album TRACK-1) TRACK-1) #true)
+(check-expect (in-album? "A Day With Rain" TRACK-1) #false)
+
+#;
+(define (in-album? album track) #false)
+
+(define (in-album? album track)
+  (string=? album
+            (track-album track)))

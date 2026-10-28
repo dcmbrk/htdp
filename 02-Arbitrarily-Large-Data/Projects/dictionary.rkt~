@@ -1,0 +1,29 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-reader.ss" "lang")((modname dictionary) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
+(require 2htdp/batch-io)
+
+;; Constants
+;; =========
+
+(define LOCATION "/usr/share/dict/words")
+(define AS-LIST (read-lines LOCATION))    ;Dictionary
+
+;; Data definitions
+;; ================
+
+;; a Dictionary is a ListOfString
+
+#;
+(define (fn-for-dictionary los)
+  (cond [(empty? los) (...)]
+        [else
+         (... (first los)                           ;String   
+              (fn-for-dictionary (rest los)))]))    ;ListOfString
+
+;; Functions
+;; =========
+
+;; Application
+;; ===========
+

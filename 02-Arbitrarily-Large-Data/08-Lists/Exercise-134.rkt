@@ -1,0 +1,45 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-reader.ss" "lang")((modname Exercise-134) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
+;; ================
+;; Data definitions
+
+;; ListOfString is one of:
+;; - '()
+;; - (cons String ListOfString)
+;; Represents a list of string
+
+(define LOS0 '())
+(define LOS1 (cons "A" '()))
+(define LOS2 (cons "A" (cons "B" '())))
+
+#;
+(define (fn-for-los los)
+  (cond [(empty? los) (...)]
+        [else
+         (... (first los)
+              (fn-for-los (rest los)))]))
+
+;; Template rules used:
+;; - one of 2 cases:
+;; - atomic distinct: '()
+;; - compound: (cons String ListOfString)
+;; - self-reference: (rest los) is ListOfStringf
+
+;; Functions
+;; =========
+
+;; ListOfString String -> Boolean
+;; Determines if list of string contain string
+(check-expect (contain? '() "A") #false)
+(check-expect (contain? (cons "B" (cons "C" '())) "A") #false)
+(check-expect (contain? (cons "A" '()) "A") #true)
+(check-expect (contain? (cons "B" (cons "A" '())) "A") #true)
+
+;(define (contain? los s) #false)
+
+(define (contain? los s)
+  (cond [(empty? los) #false]
+        [else
+         (or (string=? (first los) s)
+             (contain? (rest los) s))]))

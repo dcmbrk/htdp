@@ -1,0 +1,64 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-reader.ss" "lang")((modname Exercise-195) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
+(require 2htdp/batch-io)
+
+;; Constants
+;; =========
+
+(define LOCATION "words.txt")
+(define AS-LIST (read-lines LOCATION))    ;ListOfString
+(define LETTERS
+  (explode "abcdefghijklmnopqrstuvwxyz")) ;ListOf1String
+
+;; Data definitions
+;; ================
+
+;; A Dictionary is a ListOfString
+#;
+(define (fn-for-los los)
+  (cond [(empty? los) (...)]
+        [else
+         (... (first los)                    ;String   
+              (fn-for-los (rest los)))]))    ;ListOfString
+
+
+;; A Letter is one of:
+;; - "a"
+;; - "b"
+;; - ...
+;; - "z"
+;; or is a members? of LETTERS
+
+;; Functions
+;; =========
+
+;; Letter Dictionary -> Natural
+;; counts how many words in given Dictionary start with given Letter.
+(check-expect (starts-with# "e" AS-LIST) 3307)
+(check-expect (starts-with# "z" AS-LIST) 151)
+
+#;
+(define (starts-with# letter dict) 0)
+
+(define (starts-with# letter dict)
+  (cond [(empty? dict) 0]
+        [else
+         (if (start-with letter (first dict))
+             (+ 1 (starts-with# letter (rest dict)))
+             (starts-with# letter (rest dict)))]))
+
+;; Letter String -> Boolean
+;; determines if String starts with given Letter.
+(check-expect (start-with "a" "a") #true)
+(check-expect (start-with "a" "ab") #true)
+(check-expect (start-with "a" "b") #false)
+(check-expect (start-with "b" "ab") #false)
+
+(define (start-with letter string)
+  (string=? letter
+            (substring string 0 1)))
+
+
+;; Application
+;; ===========

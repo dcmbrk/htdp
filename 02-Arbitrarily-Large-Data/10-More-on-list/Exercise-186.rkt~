@@ -1,0 +1,53 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-reader.ss" "lang")((modname Exercise-186) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
+;; Exercise 186
+
+;; Constant
+;; ========
+
+;; Data definitions
+;; ================
+
+;; Numbers is one of:
+;; - empty
+;; - (cons Number Numbers)
+;; interp. a list of numbers.
+
+#;
+(define (fn-for-numbers numbers)
+  (cond [(empty? numbers) (...)]
+        [else
+         (... (first numbers)
+              (fn-for-numbers (rest numbers)))]))
+
+
+;; Functions
+;; =========
+
+;; Numbers -> Boolean
+;; Determines if list of numbers are sorted.
+(check-expect (sorted? empty) #true)
+(check-expect (sorted? (list 1)) #true)
+(check-expect (sorted? (list 2 1)) #true)
+(check-expect (sorted? (list 1 2)) #false)
+
+(define (sorted? numbers)
+  (cond [(empty? numbers) #true]
+        [(empty? (rest numbers)) #true]
+        [else
+         (and (> (first numbers) (second numbers))
+              (sorted? (rest numbers)))]))
+
+;; Numbers -> Numbers
+;; Produces a sorted version of list
+(check-satisfied (sort>/bad (list 1 2 3)) sorted?)  ;It's should be false!
+
+(define (sort>/bad numbers)
+  (list 9 8 7 6 5 4 2 1 0))
+
+;; Numbers -> Numbers
+;; Inserting sort.
+;; !!!
+
+(define (sort> numbers) empty)
